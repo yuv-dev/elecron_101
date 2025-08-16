@@ -1,0 +1,30 @@
+name: Build & Release (Electron Forge)
+
+on:
+  push:
+    tags:
+      - 'v*'   # Trigger when pushing a version tag like v1.0.0
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.12.0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Make & Publish with Electron Forge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub secret
+        run: npm run publish
